@@ -6,7 +6,7 @@ from views import create_user, login_user
 
 
 class JSONServer(HandleRequests):
-    """Server class to handle incoming HTTP requests for shipping ships"""
+    """Server class to handle incoming HTTP requests for rare publishing"""
 
     def do_POST(self):
 
