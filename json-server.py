@@ -5,6 +5,7 @@ from views import create_user, login_user
 
 
 
+
 class JSONServer(HandleRequests):
     """Server class to handle incoming HTTP requests for rare publishing"""
 
@@ -18,7 +19,7 @@ class JSONServer(HandleRequests):
         request_body = self.rfile.read(content_len)
         request_body = json.loads(request_body)
 
-        if url["requested_resource"] == "users":
+        if url["requested_resource"] == "register":
             successfully_updated = create_user(request_body)
             if successfully_updated:
                 return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
