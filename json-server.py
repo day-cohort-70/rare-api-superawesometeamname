@@ -1,17 +1,13 @@
 import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
+from views import create_user, login_user
 
 
-# Add your imports below this line
-# from views import list_docks, retrieve_dock, delete_dock, update_dock
-# from views import list_haulers, retrieve_hauler, delete_hauler, update_hauler
-# from views import list_ships, retrieve_ship, delete_ship, update_ship, create_ship
-from views import create_user
 
 
 class JSONServer(HandleRequests):
-    """Server class to handle incoming HTTP requests for shipping ships"""
+    """Server class to handle incoming HTTP requests for rare publishing"""
 
     def do_POST(self):
 
@@ -27,6 +23,8 @@ class JSONServer(HandleRequests):
             successfully_updated = create_user(request_body)
             if successfully_updated:
                 return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+
+        
 
         else:
             return self.response(
