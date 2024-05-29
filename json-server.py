@@ -4,8 +4,6 @@ from nss_handler import HandleRequests, status
 from views import create_user, login_user
 
 
-
-
 class JSONServer(HandleRequests):
     """Server class to handle incoming HTTP requests for rare publishing"""
 
@@ -22,9 +20,9 @@ class JSONServer(HandleRequests):
         if url["requested_resource"] == "register":
             successfully_updated = create_user(request_body)
             if successfully_updated:
-                return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
-
-        
+                return self.response(
+                    successfully_updated, status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value
+                )
 
         else:
             return self.response(
