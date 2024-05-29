@@ -7,6 +7,7 @@ from nss_handler import HandleRequests, status
 # from views import list_docks, retrieve_dock, delete_dock, update_dock
 # from views import list_haulers, retrieve_hauler, delete_hauler, update_hauler
 # from views import list_ships, retrieve_ship, delete_ship, update_ship, create_ship
+from views import create_user
 
 
 class JSONServer(HandleRequests):
@@ -22,7 +23,7 @@ class JSONServer(HandleRequests):
         request_body = self.rfile.read(content_len)
         request_body = json.loads(request_body)
 
-        if url["requested_resource"] == "users":
+        if url["requested_resource"] == "register":
             successfully_updated = create_user(request_body)
             if successfully_updated:
                 return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
