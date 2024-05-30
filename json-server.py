@@ -21,7 +21,7 @@ class JSONServer(HandleRequests):
             successfully_updated = create_user(request_body)
             if successfully_updated:
                 return self.response(
-                    successfully_updated, status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value
+                    successfully_updated, status.HTTP_200_SUCCESS.value
                 )
 
         else:
