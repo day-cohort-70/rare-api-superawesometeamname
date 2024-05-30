@@ -24,6 +24,13 @@ class JSONServer(HandleRequests):
                     successfully_updated, status.HTTP_200_SUCCESS.value
                 )
 
+        elif url["requested_resource"] == "login":
+            successfully_updated = login_user(request_body)
+            if successfully_updated:
+                return self.response(
+                    successfully_updated, status.HTTP_200_SUCCESS.value
+                )
+
         else:
             return self.response(
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
