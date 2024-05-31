@@ -1,7 +1,8 @@
 import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
-from views import create_user, login_user, new_post
+
+from views import create_user, login_user, new_post, list_users, retrieve_user
 
 
 class JSONServer(HandleRequests):
@@ -41,6 +42,21 @@ class JSONServer(HandleRequests):
             return self.response(
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
             )
+        
+
+    def do_GET(self):
+        """Handle GET requests from a client"""
+
+        response_body = ""
+        url = self.parse_url(self.path)
+
+        if url["requested_resource"] == "Users":
+            if url["pk"] != 0:
+                response_body = retrieve_user(url["pk"])
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+            response_body = list_users()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
 
 #
