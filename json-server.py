@@ -1,7 +1,7 @@
 import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
-from views import create_user, login_user
+from views import create_user, login_user, new_post
 
 
 class JSONServer(HandleRequests):
@@ -26,6 +26,12 @@ class JSONServer(HandleRequests):
 
         elif url["requested_resource"] == "login":
             successfully_updated = login_user(request_body)
+            if successfully_updated:
+                return self.response(
+                    successfully_updated, status.HTTP_200_SUCCESS.value
+                )
+        elif url["requested_resource"] == "posts":
+            successfully_updated = new_post(request_body)
             if successfully_updated:
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
