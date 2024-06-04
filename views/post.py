@@ -48,3 +48,99 @@ def view_all_posts(all_posts):
         serialized_allPosts = json.dumps(allPosts)
 
     return serialized_allPosts
+=======
+
+def get_user_posts(user_id):
+    # Open a connection to the database
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+        # Write the SQL query to get the information you want
+        db_cursor.execute(
+            """
+        SELECT
+            p.id,
+            p.category_id,
+            p.title,
+            p.publication_date,
+            p.image_url,
+            p.content,
+            p.approved,
+            p.user_id,
+            u.first_name,
+            u.last_name,
+            c.label
+        FROM Posts p
+        JOIN Users u ON p.user_id = u.id
+        JOIN Categories c ON p.category_id = c.id
+        WHERE p.user_id = ?             
+        """,
+            (user_id,),
+        )
+        query_results = db_cursor.fetchall()
+
+        posts = []
+        for row in query_results:
+            post = {
+                "id": row["id"],
+                "user_id": row["user_id"],
+                "category_id": row["category_id"],
+                "title": row["title"],
+                "publication_date": row["publication_date"],
+                "image_url": row["image_url"],
+                "content": row["content"],
+                "approved": row["approved"],
+                "user": {
+                    "id": row["user_id"],
+                    "first_name": row["first_name"],
+                    "last_name": row["last_name"],
+                },
+                "categories": {
+                    "id": row["category_id"],
+                    "label": row["label"],
+                },
+            }
+            posts.append(post)
+        # Serialize Python list to JSON encoded string
+        serialized_posts = json.dumps(posts)
+
+        return serialized_posts
+
+
+def list_posts(url):
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+        # Write the SQL query to get the information you want
+        db_cursor.execute(
+            """
+        SELECT
+            p.id,
+            p.category_id,
+            p.title,
+            p.publication_date,
+            p.image_url,
+            p.content,
+            p.approved            
+        FROM Posts p
+        """,
+        )
+        query_results = db_cursor.fetchall()
+
+        posts = []
+        for row in query_results:
+            post = {
+                "id": row["id"],
+                "category_id": row["category_id"],
+                "title": row["tile"],
+                "publication_date": row["publication_date"],
+                "image_url": row["image_url"],
+                "content": row["content"],
+                "approved": row["approved"],
+            }
+            posts.append(post)
+        # Serialize Python list to JSON encoded string
+        serialized_posts = json.dumps(posts)
+
+        return serialized_posts
+

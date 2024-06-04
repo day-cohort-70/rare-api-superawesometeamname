@@ -2,7 +2,9 @@ import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
-from views import create_user, login_user, new_post, list_users, retrieve_user, new_category, list_categories
+
+from views import create_user, login_user, new_post, list_users, retrieve_user, new_category, list_categories, list_posts, get_user_posts, list_tags, retrieve_tag, create_tag
+
 
 
 class JSONServer(HandleRequests):
@@ -37,8 +39,15 @@ class JSONServer(HandleRequests):
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
                 )
+
         elif url["requested_resource"] == "categories":
             successfully_updated = new_category(request_body)
+            if successfully_updated:
+                return self.response(
+                    successfully_updated, status.HTTP_200_SUCCESS.value
+
+        elif url["requested_resource"] == "Tags":
+            successfully_updated = create_tag(request_body)
             if successfully_updated:
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
@@ -47,7 +56,6 @@ class JSONServer(HandleRequests):
             return self.response(
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
             )
-        
 
     def do_GET(self):
         """Handle GET requests from a client"""
@@ -55,7 +63,24 @@ class JSONServer(HandleRequests):
         response_body = ""
         url = self.parse_url(self.path)
 
-        if url["requested_resource"] == "Users":
+        if url["requested_resource"] == "posts":
+            if url["query_params"] != 0:
+                user_id_list = url["query_params"]["user_id"]
+                user_id = user_id_list[0]
+                response_body = get_user_posts(user_id)
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+            response_body = list_posts(url)
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+        
+        elif url["requested_resource"] == "Tags":
+            if url["pk"] != 0:
+                response_body = retrieve_tag(url["pk"])
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+            response_body = list_tags()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+        
+        elif url["requested_resource"] == "Users":
             if url["pk"] != 0:
                 response_body = retrieve_user(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
