@@ -2,7 +2,7 @@ import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
-from views import create_user, login_user, new_post, list_users, retrieve_user
+from views import create_user, login_user, new_post, list_users, retrieve_user, new_category, list_categories
 
 
 class JSONServer(HandleRequests):
@@ -37,7 +37,12 @@ class JSONServer(HandleRequests):
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
                 )
-
+        elif url["requested_resource"] == "categories":
+            successfully_updated = new_category(request_body)
+            if successfully_updated:
+                return self.response(
+                    successfully_updated, status.HTTP_200_SUCCESS.value
+                )
         else:
             return self.response(
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
@@ -58,8 +63,13 @@ class JSONServer(HandleRequests):
             response_body = list_users()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
+        elif url["requested_resource"] == "categories":
+            response_body = list_categories()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-#
+
+
+
 # THE CODE BELOW THIS LINE IS NOT IMPORTANT FOR REACHING YOUR LEARNING OBJECTIVES
 #
 def main():
