@@ -2,7 +2,7 @@ import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
-from views import create_user, login_user, new_post, list_users, retrieve_user
+from views import create_user, login_user, new_post, list_users, retrieve_user, list_tags, retrieve_tag, create_tag
 
 
 class JSONServer(HandleRequests):
@@ -37,6 +37,12 @@ class JSONServer(HandleRequests):
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
                 )
+        elif url["requested_resource"] == "Tags":
+            successfully_updated = create_tag(request_body)
+            if successfully_updated:
+                return self.response(
+                    successfully_updated, status.HTTP_200_SUCCESS.value
+                )
 
         else:
             return self.response(
@@ -56,6 +62,14 @@ class JSONServer(HandleRequests):
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
             response_body = list_users()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+        
+        elif url["requested_resource"] == "Tags":
+            if url["pk"] != 0:
+                response_body = retrieve_tag(url["pk"])
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+            response_body = list_tags()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
 
