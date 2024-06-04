@@ -83,10 +83,14 @@ def list_users():
             u.id,
             u.first_name,
             u.last_name,
-            u.username
+            u.username,
+            u.email,
+            u.bio,
+            u.created_on,
+            u.active
         FROM Users u
-        """
-        )
+        ORDER BY u.username ASC
+        """)
         query_results = db_cursor.fetchall()
 
         # Initialize an empty list and then add each dictionary to it
@@ -113,7 +117,11 @@ def retrieve_user(pk):
             u.id,
             u.first_name,
             u.last_name,
-            u.username
+            u.username,
+            u.email,
+            u.bio,
+            u.created_on,
+            u.active
         FROM Users u
         WHERE u.id = ?
         """,
