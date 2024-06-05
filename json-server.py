@@ -14,7 +14,7 @@ from views import (
     list_tags,
     retrieve_tag,
     create_tag,
-    new_category
+    new_category,
     list_categories,
     list_users
 )
@@ -57,7 +57,8 @@ class JSONServer(HandleRequests):
             if successfully_updated:
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
-
+                )
+            
         elif url["requested_resource"] == "Tags":
             successfully_updated = create_tag(request_body)
             if successfully_updated:
