@@ -27,6 +27,71 @@ def new_post(post_data):
         return json.dumps({"token": id, "valid": True})
 
 
+def get_post_by_id(post_id):
+    try:
+        # Open a connection to the database
+        with sqlite3.connect("./db.sqlite3") as conn:
+            conn.row_factory = sqlite3.Row
+            db_cursor = conn.cursor()
+
+            # Write the SQL query to get the post by ID
+            db_cursor.execute(
+                """
+                SELECT
+                    p.id,
+                    p.category_id,
+                    p.title,
+                    p.publication_date,
+                    p.image_url,
+                    p.content,
+                    p.approved,
+                    p.user_id,
+                    u.first_name,
+                    u.last_name
+                FROM Posts p
+                JOIN Users u ON p.user_id = u.id
+                WHERE p.id = ?
+                """,
+                (post_id,),
+            )
+
+            # Fetch the query result
+            row = db_cursor.fetchone()
+            db_cursor.close()
+
+            # If no post is found, return None or raise an error
+            if row is None:
+                return json.dumps({"error": "Post not found"})
+
+            # Structure the post data
+            post = {
+                "id": row["id"],
+                "category_id": row["category_id"],
+                "title": row["title"],
+                "publication_date": row["publication_date"],
+                "image_url": row["image_url"],
+                "content": row["content"],
+                "approved": row["approved"],
+                "user": {
+                    "id": row["user_id"],
+                    "first_name": row["first_name"],
+                    "last_name": row["last_name"],
+                },
+            }
+
+            # Serialize the dictionary to JSON
+            serialized_post = json.dumps(post)
+            return serialized_post
+
+    except sqlite3.Error as e:
+        # Handle any database errors
+        return json.dumps({"error": str(e)})
+
+
+# Example usage
+# print(get_post_by_id(1))
+
+
 def get_user_posts(user_id):
     # Open a connection to the database
     with sqlite3.connect("./db.sqlite3") as conn:
