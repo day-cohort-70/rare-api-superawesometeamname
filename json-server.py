@@ -16,14 +16,14 @@ from views import (
     create_tag,
     new_category,
     list_categories,
-    update_tag
+    update_tag,
 )
+
 
 class JSONServer(HandleRequests):
     """Server class to handle incoming HTTP requests for rare publishing"""
 
     def do_POST(self):
-
         # Parse the URL and get the primary key
         url = self.parse_url(self.path)
 
@@ -45,6 +45,7 @@ class JSONServer(HandleRequests):
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
                 )
+
         elif url["requested_resource"] == "posts":
             successfully_updated = new_post(request_body)
             if successfully_updated:
@@ -58,8 +59,7 @@ class JSONServer(HandleRequests):
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
                 )
-            
-        elif url["requested_resource"] == "Tags":
+        elif url["requested_resource"] == "tags":       
             successfully_updated = create_tag(request_body)
             if successfully_updated:
                 return self.response(
@@ -91,16 +91,16 @@ class JSONServer(HandleRequests):
 
             response_body = list_posts(url)
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
-        
-        elif url["requested_resource"] == "Tags":
+
+        elif url["requested_resource"] == "tags":
             if url["pk"] != 0:
                 response_body = retrieve_tag(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
             response_body = list_tags()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
-        
-        elif url["requested_resource"] == "Users":
+
+        elif url["requested_resource"] == "users":
             if url["pk"] != 0:
                 response_body = retrieve_user(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
@@ -111,7 +111,6 @@ class JSONServer(HandleRequests):
         elif url["requested_resource"] == "categories":
             response_body = list_categories()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
-
 
     def do_PUT(self):
         # Handle PUT requests from a client
@@ -144,8 +143,6 @@ class JSONServer(HandleRequests):
             return self.response(
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
             )
-
-
 
 # THE CODE BELOW THIS LINE IS NOT IMPORTANT FOR REACHING YOUR LEARNING OBJECTIVES
 #

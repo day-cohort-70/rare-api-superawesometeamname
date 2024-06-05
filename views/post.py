@@ -26,10 +26,12 @@ def new_post(post_data):
 
         return json.dumps({"token": id, "valid": True})
 
+
 def view_all_posts(all_posts):
     with sqlite3.connect("./db.sqlite3") as conn:
         db_cursor = conn.cursor()
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
             SELECT
                 Posts.id,
                 Posts.user_id,
@@ -39,7 +41,8 @@ def view_all_posts(all_posts):
                 Posts.image_url,
                 Posts.content,
                 Posts.approved
-        """)
+        """
+        )
         query_results = db_cursor.fetchall()
         allPosts = []
         for row in query_results:
@@ -208,4 +211,3 @@ def list_posts(url):
         serialized_posts = json.dumps(posts)
 
         return serialized_posts
-
