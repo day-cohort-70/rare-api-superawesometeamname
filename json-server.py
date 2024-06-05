@@ -16,7 +16,7 @@ from views import (
     create_tag,
     new_category,
     list_categories,
-    list_users
+    update_tag
 )
 
 class JSONServer(HandleRequests):
@@ -70,6 +70,7 @@ class JSONServer(HandleRequests):
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
             )
 
+    
     def do_GET(self):
         """Handle GET requests from a client"""
 
@@ -112,6 +113,37 @@ class JSONServer(HandleRequests):
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
 
+    def do_PUT(self):
+        # Handle PUT requests from a client
+
+        # Parse the URL and get the primary key
+        url = self.parse_url(self.path)
+
+        # Get the request body JSON for the updated data
+        content_len = int(self.headers.get("content-length", 0))
+        request_body = self.rfile.read(content_len)
+        request_body = json.loads(request_body)
+
+        if url["requested_resource"] == "Tags":
+            if url["pk"] != 0:
+                tag_id = url["pk"]
+                successfully_updated = update_tag(tag_id, request_body)
+                if successfully_updated:
+                    return self.response(
+                        successfully_updated, status.HTTP_200_SUCCESS.value
+                    )
+                else:
+                    return self.response(
+                        "Tag not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                    )
+            else:
+                return self.response(
+                    "Invalid tag ID", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+                )
+        else:
+            return self.response(
+                "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+            )
 
 
 

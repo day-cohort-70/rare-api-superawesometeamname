@@ -68,3 +68,33 @@ def create_tag(tag):
             'token': id,
             'valid': True
         })
+    
+
+def update_tag(pk, updated_tag):
+    # Open a connection to the database
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to update the tag
+        db_cursor.execute("""
+        UPDATE Tags
+        SET label = ?
+        WHERE id = ?
+        """, (
+            updated_tag['label'],
+            pk
+        ))
+
+        rows_affected = db_cursor.rowcount
+
+        if rows_affected == 0:
+            return json.dumps({
+                'message': 'Tag not found',
+                'valid': False
+            })
+        else:
+            return json.dumps({
+                'message': 'Tag updated successfully',
+                'valid': True
+            })
