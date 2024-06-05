@@ -11,8 +11,13 @@ from views import (
     list_posts,
     get_user_posts,
     get_post_by_id,
+    list_tags,
+    retrieve_tag,
+    create_tag,
+    new_category
+    list_categories,
+    list_users
 )
-
 
 class JSONServer(HandleRequests):
     """Server class to handle incoming HTTP requests for rare publishing"""
@@ -47,6 +52,18 @@ class JSONServer(HandleRequests):
                     successfully_updated, status.HTTP_200_SUCCESS.value
                 )
 
+        elif url["requested_resource"] == "categories":
+            successfully_updated = new_category(request_body)
+            if successfully_updated:
+                return self.response(
+                    successfully_updated, status.HTTP_200_SUCCESS.value
+
+        elif url["requested_resource"] == "Tags":
+            successfully_updated = create_tag(request_body)
+            if successfully_updated:
+                return self.response(
+                    successfully_updated, status.HTTP_200_SUCCESS.value
+                )
         else:
             return self.response(
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
@@ -64,13 +81,39 @@ class JSONServer(HandleRequests):
                 user_id = user_id_list[0]
                 response_body = get_user_posts(user_id)
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
             if url["pk"] != 0:
                 post_id = url["pk"]
                 response_body = get_post_by_id(post_id)
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
+            response_body = list_posts(url)
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+        
+        elif url["requested_resource"] == "Tags":
+            if url["pk"] != 0:
+                response_body = retrieve_tag(url["pk"])
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-#
+            response_body = list_tags()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+        
+        elif url["requested_resource"] == "Users":
+            if url["pk"] != 0:
+                response_body = retrieve_user(url["pk"])
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+            response_body = list_users()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+        elif url["requested_resource"] == "categories":
+            response_body = list_categories()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+
+
+
+
 # THE CODE BELOW THIS LINE IS NOT IMPORTANT FOR REACHING YOUR LEARNING OBJECTIVES
 #
 def main():
