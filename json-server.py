@@ -2,10 +2,22 @@ import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
-
-from views import create_user, login_user, new_post, list_users, retrieve_user, new_category, list_categories, list_posts, get_user_posts, list_tags, retrieve_tag, create_tag
-
-
+from views import (
+    create_user,
+    login_user,
+    new_post,
+    list_users,
+    retrieve_user,
+    list_posts,
+    get_user_posts,
+    get_post_by_id,
+    list_tags,
+    retrieve_tag,
+    create_tag,
+    new_category
+    list_categories,
+    list_users
+)
 
 class JSONServer(HandleRequests):
     """Server class to handle incoming HTTP requests for rare publishing"""
@@ -64,11 +76,17 @@ class JSONServer(HandleRequests):
         url = self.parse_url(self.path)
 
         if url["requested_resource"] == "posts":
-            if url["query_params"] != 0:
+            if url["query_params"]:
                 user_id_list = url["query_params"]["user_id"]
                 user_id = user_id_list[0]
                 response_body = get_user_posts(user_id)
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+            if url["pk"] != 0:
+                post_id = url["pk"]
+                response_body = get_post_by_id(post_id)
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
             response_body = list_posts(url)
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
         
@@ -91,6 +109,7 @@ class JSONServer(HandleRequests):
         elif url["requested_resource"] == "categories":
             response_body = list_categories()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
 
 
 
