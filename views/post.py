@@ -48,7 +48,7 @@ def view_all_posts(all_posts):
         serialized_allPosts = json.dumps(allPosts)
 
     return serialized_allPosts
-=======
+
 
 def get_post_by_id(post_id):
     try:
