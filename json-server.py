@@ -16,6 +16,7 @@ from views import (
     create_tag,
     new_category,
     list_categories,
+    update_tag,
 )
 
 
@@ -58,8 +59,7 @@ class JSONServer(HandleRequests):
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
                 )
-
-        elif url["requested_resource"] == "tags":
+        elif url["requested_resource"] == "tags":       
             successfully_updated = create_tag(request_body)
             if successfully_updated:
                 return self.response(
@@ -70,6 +70,7 @@ class JSONServer(HandleRequests):
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
             )
 
+    
     def do_GET(self):
         """Handle GET requests from a client"""
 
@@ -110,6 +111,38 @@ class JSONServer(HandleRequests):
         elif url["requested_resource"] == "categories":
             response_body = list_categories()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+    def do_PUT(self):
+        # Handle PUT requests from a client
+
+        # Parse the URL and get the primary key
+        url = self.parse_url(self.path)
+
+        # Get the request body JSON for the updated data
+        content_len = int(self.headers.get("content-length", 0))
+        request_body = self.rfile.read(content_len)
+        request_body = json.loads(request_body)
+
+        if url["requested_resource"] == "Tags":
+            if url["pk"] != 0:
+                tag_id = url["pk"]
+                successfully_updated = update_tag(tag_id, request_body)
+                if successfully_updated:
+                    return self.response(
+                        successfully_updated, status.HTTP_200_SUCCESS.value
+                    )
+                else:
+                    return self.response(
+                        "Tag not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                    )
+            else:
+                return self.response(
+                    "Invalid tag ID", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+                )
+        else:
+            return self.response(
+                "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+            )
 
 # THE CODE BELOW THIS LINE IS NOT IMPORTANT FOR REACHING YOUR LEARNING OBJECTIVES
 #
