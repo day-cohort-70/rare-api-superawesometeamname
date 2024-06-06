@@ -19,9 +19,10 @@ from views import (
     new_comment,
     get_comments_by_post_id,
     list_users,
-    update_category, 
-    retrieve_category
+    update_category,
+    retrieve_category,
     update_tag,
+    delete_tag
 )
 
 
@@ -81,6 +82,7 @@ class JSONServer(HandleRequests):
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
             )
 
+
     def do_GET(self):
         """Handle GET requests from a client"""
 
@@ -124,7 +126,7 @@ class JSONServer(HandleRequests):
             if url["pk"] != 0:
                 response_body = retrieve_category(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
-        
+    
             response_body = list_categories()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
@@ -163,6 +165,22 @@ class JSONServer(HandleRequests):
             return self.response(
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
             )
+
+
+    def do_DELETE(self):
+        """Handle DELETE requests from a client"""
+
+        url = self.parse_url(self.path)
+        pk = url["pk"]
+
+        if url["requested_resource"] == "tags":
+            if pk != 0:
+                successfully_deleted = delete_tag(pk)
+                if successfully_deleted:
+                    return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+           
+                return self.response("Requested resource not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+
 
 
 # THE CODE BELOW THIS LINE IS NOT IMPORTANT FOR REACHING YOUR LEARNING OBJECTIVES
