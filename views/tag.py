@@ -62,13 +62,14 @@ def create_tag(tag):
             tag['label'],
         ))
 
-        id = db_cursor.lastrowid
+        tag_id = db_cursor.lastrowid
 
         return json.dumps({
-            'token': id,
+            'token': tag_id,
+            'label': tag['label'],
             'valid': True
         })
-    
+
 
 def update_tag(pk, updated_tag):
     # Open a connection to the database
@@ -98,3 +99,18 @@ def update_tag(pk, updated_tag):
                 'message': 'Tag updated successfully',
                 'valid': True
             })
+     
+
+def delete_tag(pk):
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        DELETE FROM Tags WHERE id = ?
+        """, (pk,)
+        )
+        number_of_rows_deleted = db_cursor.rowcount
+
+    return True if number_of_rows_deleted > 0 else False
