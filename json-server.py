@@ -18,13 +18,15 @@ from views import (
     list_users,
     update_category, 
     retrieve_category
+    update_tag,
+
 )
+
 
 class JSONServer(HandleRequests):
     """Server class to handle incoming HTTP requests for rare publishing"""
 
     def do_POST(self):
-
         # Parse the URL and get the primary key
         url = self.parse_url(self.path)
 
@@ -46,6 +48,7 @@ class JSONServer(HandleRequests):
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
                 )
+
         elif url["requested_resource"] == "posts":
             successfully_updated = new_post(request_body)
             if successfully_updated:
@@ -59,8 +62,7 @@ class JSONServer(HandleRequests):
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
                 )
-            
-        elif url["requested_resource"] == "Tags":
+        elif url["requested_resource"] == "tags":       
             successfully_updated = create_tag(request_body)
             if successfully_updated:
                 return self.response(
@@ -71,6 +73,7 @@ class JSONServer(HandleRequests):
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
             )
 
+    
     def do_GET(self):
         """Handle GET requests from a client"""
 
@@ -91,16 +94,16 @@ class JSONServer(HandleRequests):
 
             response_body = list_posts(url)
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
-        
-        elif url["requested_resource"] == "Tags":
+
+        elif url["requested_resource"] == "tags":
             if url["pk"] != 0:
                 response_body = retrieve_tag(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
             response_body = list_tags()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
-        
-        elif url["requested_resource"] == "Users":
+
+        elif url["requested_resource"] == "users":
             if url["pk"] != 0:
                 response_body = retrieve_user(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
@@ -130,6 +133,25 @@ class JSONServer(HandleRequests):
                 if successfully_updated:
                     return self.response(successfully_updated, status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
 
+        if url["requested_resource"] == "tags":
+            if pk != 0:
+                successfully_updated = update_tag(pk, request_body)
+                if successfully_updated:
+                    return self.response(
+                        successfully_updated, status.HTTP_200_SUCCESS.value
+                    )
+                else:
+                    return self.response(
+                        "Tag not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                    )
+            else:
+                return self.response(
+                    "Invalid tag ID", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+                )
+        else:
+            return self.response(
+                "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+            )
 
 # THE CODE BELOW THIS LINE IS NOT IMPORTANT FOR REACHING YOUR LEARNING OBJECTIVES
 #
