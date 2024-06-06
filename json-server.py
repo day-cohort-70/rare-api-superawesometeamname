@@ -13,13 +13,15 @@ from views import (
     list_tags,
     retrieve_tag,
     create_tag,
+    update_tag,
     new_category,
     list_categories,
+    new_comment,
+    get_comments_by_post_id,
     list_users,
     update_category, 
     retrieve_category
     update_tag,
-
 )
 
 
@@ -62,8 +64,14 @@ class JSONServer(HandleRequests):
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
                 )
-        elif url["requested_resource"] == "tags":       
+        elif url["requested_resource"] == "tags":
             successfully_updated = create_tag(request_body)
+            if successfully_updated:
+                return self.response(
+                    successfully_updated, status.HTTP_200_SUCCESS.value
+                )
+        elif url["requested_resource"] == "comments":
+            successfully_updated = new_comment(request_body)
             if successfully_updated:
                 return self.response(
                     successfully_updated, status.HTTP_200_SUCCESS.value
@@ -73,7 +81,6 @@ class JSONServer(HandleRequests):
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
             )
 
-    
     def do_GET(self):
         """Handle GET requests from a client"""
 
@@ -107,10 +114,12 @@ class JSONServer(HandleRequests):
             if url["pk"] != 0:
                 response_body = retrieve_user(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
-
             response_body = list_users()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
-
+          
+        elif url["requested_resource"] == "comments":
+            response_body = get_comments_by_post_id(url["pk"])
+            
         elif url["requested_resource"] == "categories":
             if url["pk"] != 0:
                 response_body = retrieve_category(url["pk"])
@@ -142,16 +151,19 @@ class JSONServer(HandleRequests):
                     )
                 else:
                     return self.response(
-                        "Tag not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                        "Tag not found",
+                        status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value,
                     )
             else:
                 return self.response(
-                    "Invalid tag ID", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+                    "Invalid tag ID",
+                    status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value,
                 )
         else:
             return self.response(
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
             )
+
 
 # THE CODE BELOW THIS LINE IS NOT IMPORTANT FOR REACHING YOUR LEARNING OBJECTIVES
 #
