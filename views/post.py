@@ -52,7 +52,6 @@ def view_all_posts(all_posts):
 
     return serialized_allPosts
 
-
 def get_post_by_id(post_id):
     try:
         # Open a connection to the database
@@ -200,7 +199,7 @@ def list_posts(url):
             post = {
                 "id": row["id"],
                 "category_id": row["category_id"],
-                "title": row["tile"],
+                "title": row["title"],
                 "publication_date": row["publication_date"],
                 "image_url": row["image_url"],
                 "content": row["content"],

@@ -6,7 +6,6 @@ from views import (
     create_user,
     login_user,
     new_post,
-    list_users,
     retrieve_user,
     list_posts,
     get_user_posts,
@@ -16,7 +15,11 @@ from views import (
     create_tag,
     new_category,
     list_categories,
+    list_users,
+    update_category, 
+    retrieve_category
     update_tag,
+
 )
 
 
@@ -109,24 +112,30 @@ class JSONServer(HandleRequests):
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         elif url["requested_resource"] == "categories":
+            if url["pk"] != 0:
+                response_body = retrieve_category(url["pk"])
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+        
             response_body = list_categories()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
+
     def do_PUT(self):
-        # Handle PUT requests from a client
-
-        # Parse the URL and get the primary key
         url = self.parse_url(self.path)
-
-        # Get the request body JSON for the updated data
+        pk = url["pk"]
         content_len = int(self.headers.get("content-length", 0))
         request_body = self.rfile.read(content_len)
         request_body = json.loads(request_body)
 
-        if url["requested_resource"] == "Tags":
-            if url["pk"] != 0:
-                tag_id = url["pk"]
-                successfully_updated = update_tag(tag_id, request_body)
+        if url["requested_resource"] == "categories":
+            if pk != 0:
+                successfully_updated = update_category(pk, request_body)
+                if successfully_updated:
+                    return self.response(successfully_updated, status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+
+        if url["requested_resource"] == "tags":
+            if pk != 0:
+                successfully_updated = update_tag(pk, request_body)
                 if successfully_updated:
                     return self.response(
                         successfully_updated, status.HTTP_200_SUCCESS.value
