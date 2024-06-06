@@ -1,6 +1,7 @@
 import sqlite3
 import json
 
+
 def list_tags():
     # Open a connection to the database
     with sqlite3.connect("./db.sqlite3") as conn:
@@ -8,16 +9,18 @@ def list_tags():
         db_cursor = conn.cursor()
 
         # Write the SQL query to get the information you want
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
         SELECT
             t.id,
             t.label
         FROM Tags t
-        """)
+        """
+        )
         query_results = db_cursor.fetchall()
 
         # Initialize an empty list and then add each dictionary to it
-        tags=[]
+        tags = []
         for row in query_results:
             tags.append(dict(row))
 
@@ -34,13 +37,16 @@ def retrieve_tag(pk):
         db_cursor = conn.cursor()
 
         # Write the SQL query to get the information you want
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
         SELECT
             t.id,
             t.label
         FROM Tags t
         WHERE t.id = ?
-        """, (pk,))
+        """,
+            (pk,),
+        )
         query_results = db_cursor.fetchone()
 
         # Serialize Python list to JSON encoded string
@@ -52,15 +58,16 @@ def retrieve_tag(pk):
 
 def create_tag(tag):
     # Open a connection to the database
-    with sqlite3.connect('./db.sqlite3') as conn:
+    with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
         Insert INTO Tags (label) values (?)
-        """, (
-            tag['label'],
-        ))
+        """,
+            (tag["label"],),
+        )
 
         tag_id = db_cursor.lastrowid
 
@@ -78,22 +85,19 @@ def update_tag(pk, updated_tag):
         db_cursor = conn.cursor()
 
         # Write the SQL query to update the tag
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
         UPDATE Tags
         SET label = ?
         WHERE id = ?
-        """, (
-            updated_tag['label'],
-            pk
-        ))
+        """,
+            (updated_tag["label"], pk),
+        )
 
         rows_affected = db_cursor.rowcount
 
         if rows_affected == 0:
-            return json.dumps({
-                'message': 'Tag not found',
-                'valid': False
-            })
+            return json.dumps({"message": "Tag not found", "valid": False})
         else:
             return json.dumps({
                 'message': 'Tag updated successfully',
