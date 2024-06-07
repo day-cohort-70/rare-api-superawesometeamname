@@ -122,6 +122,7 @@ class JSONServer(HandleRequests):
           
         elif url["requested_resource"] == "comments":
             response_body = get_comments_by_post_id(url["pk"])
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
             
         elif url["requested_resource"] == "categories":
             if url["pk"] != 0:
