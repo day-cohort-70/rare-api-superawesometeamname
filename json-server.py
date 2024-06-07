@@ -2,7 +2,7 @@ import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
-from views import (
+from views import(
     create_user,
     login_user,
     new_post,
@@ -17,9 +17,9 @@ from views import (
     list_categories,
     list_users,
     update_category, 
-    retrieve_category
+    retrieve_category,
     update_tag,
-
+    delete_category
 )
 
 
@@ -152,6 +152,20 @@ class JSONServer(HandleRequests):
             return self.response(
                 "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
             )
+
+    def do_DELETE(self):
+        """Handle DELETE requests from a client"""
+
+        url = self.parse_url(self.path)
+        pk = url["pk"]
+
+        if url["requested_resource"] == "categories":
+            if pk != 0:
+                successfully_deleted = delete_category(pk)
+                if successfully_deleted:
+                    return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+           
+                return self.response("Requested resource not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
 
 # THE CODE BELOW THIS LINE IS NOT IMPORTANT FOR REACHING YOUR LEARNING OBJECTIVES
 #
