@@ -37,9 +37,9 @@ def list_categories():
         for row in query_results:
             all_categories.append({'id': row[0], 'label': row[1]})
         
-        serialized_Labels = json.dumps(all_categories)
+        serialized_categories = json.dumps(all_categories)
 
-    return serialized_Labels
+    return serialized_categories
 
 def retrieve_category(pk):
     with sqlite3.connect("./db.sqlite3") as conn:
@@ -96,4 +96,3 @@ def update_category(pk, updated_category):
                 'message': 'Tag updated successfully',
                 'valid': True
             })
-
